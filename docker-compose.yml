@@ -1,0 +1,69 @@
+services:
+    # Бэкенд (Laravel)
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: laravel_app
+        restart: unless-stopped
+        env_file: .env
+        volumes:
+            - .:/var/www
+        networks:
+            - app-network
+
+    # Веб-сокеты (Reverb)
+    reverb:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: laravel_reverb
+        restart: unless-stopped
+        # Команда запуска именно для Reverb
+        command: php artisan reverb:start --host=0.0.0.0 --port=8080
+        env_file: .env
+        depends_on:
+            - app
+        networks:
+            - app-network
+
+    # Веб-сервер (Angie)
+    angie:
+        image: angie:1.11.3-alpine
+        container_name: laravel_angie
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - .:/var/www
+            # Проверь, что файл конфига лежит по этому пути (шаг 2)
+            - ./docker/angie.conf:/etc/angie/http.d/default.conf
+        depends_on:
+            - app
+            - reverb
+        networks:
+            - app-network
+
+    # MariaDB
+    db:
+        image: mariadb:11.4
+        container_name: laravel_db
+        restart: unless-stopped
+        env_file: .env
+        environment:
+            MARIADB_ROOT_PASSWORD: ${DB_PASSWORD} # У MariaDB свои префиксы в переменных
+            MARIADB_DATABASE: ${DB_DATABASE}
+            MARIADB_USER: ${DB_USERNAME}
+            MARIADB_PASSWORD: ${DB_PASSWORD}
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    db_data:
