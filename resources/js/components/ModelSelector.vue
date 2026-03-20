@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { availableModels, selectedModel } from "@/services/lmStudio";
+import {ref, computed} from 'vue';
 
 const props = defineProps<{
   showModelSelector?: boolean;

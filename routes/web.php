@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AiController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
@@ -15,6 +16,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard');
     Route::get('/users', UserController::class)
         ->name('users');
+    Route::get('/ai', AiController::class)
+        ->name('ai');
 
     Route::prefix('/chat')->group(function () {
         Route::get('/{user}', [ChatController::class, 'chatPage'])

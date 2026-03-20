@@ -4,6 +4,12 @@ import { useChatStore, chatStore } from "@/composables/useChatStore";
 import { getChatCompletion, getChatCompletionStream } from "@/services/lmStudio";
 import MobileOverlay from "./MobileOverlay.vue";
 import ModelSelector from "./ModelSelector.vue";
+import { ref, computed, onMounted  } from 'vue';
+import MessagesContainer from './MessagesContainer.vue';
+import InputArea from './InputArea.vue';
+import SessionSidebar from './SessionSidebar.vue';
+
+
 
 const { sessions, createSession, addMessage, loadSessions, isStreaming, updateLastMessage } = useChatStore();
 const chatStoreInstance = chatStore;
@@ -64,12 +70,12 @@ function toggleMobileMenu() {
  */
 async function sendNonStreaming() {
   if (!newMessage.value) return;
-  
+
   loading.value = true;
   const sessionId = selectedSessionId.value ?? (await createSession());
 
   // Get current conversation history BEFORE adding new message
-  const previousMessages = currentMessages.value; 
+  const previousMessages = currentMessages.value;
 
   await addMessage(sessionId, { role: "user", content: newMessage.value });
 
@@ -97,13 +103,13 @@ async function sendNonStreaming() {
  */
 async function sendStreaming() {
   if (!newMessage.value) return;
-  
+
   loading.value = true;
   const sessionId = selectedSessionId.value ?? (await createSession());
   isStreaming.value = true;
 
   // Get current conversation history BEFORE adding new message
-  const previousMessages = currentMessages.value; 
+  const previousMessages = currentMessages.value;
 
   await addMessage(sessionId, { role: "user", content: newMessage.value });
 
@@ -115,7 +121,7 @@ async function sendStreaming() {
 
   try {
     let assistantContent = "";
-    
+
     // Add an empty assistant message placeholder before streaming starts
     await addMessage(sessionId, { role: "assistant", content: "" });
 
@@ -123,12 +129,12 @@ async function sendStreaming() {
       const delta = chunk.choices?.[0]?.delta?.content;
       if (delta) {
         assistantContent += delta;
-        
+
         // Update the last message in place instead of pushing new ones
         await updateLastMessage(sessionId, assistantContent);
       }
     }
-    
+
   } catch (e) {
     console.error("Chat API streaming error", e);
     await addMessage(sessionId, { role: "assistant", content: "Error fetching response." });
@@ -141,7 +147,7 @@ async function sendStreaming() {
 
 async function send() {
   if (!newMessage.value) return;
-  
+
   // Use streaming by default for better UX
   await sendStreaming();
 }

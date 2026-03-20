@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useTemplateRef, watch, onMounted, nextTick } from "vue";
 import type { Message } from "@/types/lmStudio";
+import UserMessage from '@/components/UserMessage.vue';
+import AssistantMessage from '@/components/AssistantMessage.vue';
 
 const props = defineProps<{
   messages: Message[];

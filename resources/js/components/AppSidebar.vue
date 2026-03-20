@@ -13,7 +13,7 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { ExternalLink, LayoutGrid, UsersRound } from 'lucide-vue-next';
+import { ExternalLink, LayoutGrid, UsersRound, BotMessageSquare } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -26,6 +26,11 @@ const mainNavItems: NavItem[] = [
     title: 'Общение',
     href: '/users',
     icon: UsersRound
+  },
+  {
+    title: 'Нейросеть',
+    href: '/ai',
+    icon: BotMessageSquare
   }
 ];
 
